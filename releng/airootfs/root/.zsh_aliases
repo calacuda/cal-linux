@@ -1,0 +1,377 @@
+#
+### CUSTOM ALIASES (specific to this machine -- origami --)
+#
+
+# renames
+alias pls="doas "
+alias please="doas "
+alias wyk="doas "
+alias sudo="sudo "
+alias emacs="emacs -nw "
+alias em="emacs -nw "
+# alias git="hub "
+alias cl="clear"
+alias matrix="cmatrix && reset "
+alias nv="nvim "
+alias ln="ln -s "
+#alias cat="bat "
+#alias grep="rg "
+#alias find="fd "
+#alias paru="/usr/bin/paru --skipreview --sudoloop "
+#alias pacman='sudo pacman --color auto'
+alias rustpy="rustpython "
+alias rpy="rustpython "
+alias burpsuite="wmname LG3D && burpsuite; wmname bspwm "
+alias which="which -aS"
+alias se="sudoedit "
+alias rust-repl="evcxr"
+alias discord="/usr/bin/discord --ignore-gpu-blocklist --disable-features=UseOzonePlatform --enable-features=VaapiVideoDecoder --use-gl=desktop --enable-gpu-rasterization --enable-zero-copy"
+alias rw="tmux rename-window"
+alias rs="tmux rename-session"
+alias a='arsenal -x'
+# ssh_key="~/.ssh/id_ecdsa"
+# alias ssh="ssh -i $ssh_key "
+# alias ssh-copy-id="ssh-copy-id -i ~/.ssh/panda "
+# alias scp="scp -i $ssh_key "
+alias mosh="sudo -u $USER mosh "
+alias mutt="neomutt"
+# alias code="codium"
+alias rss="tuifeed"
+
+
+# python
+# alias python3="/usr/bin/python "
+# alias python="miniconda "
+# alias pip="pip3 "
+alias py="python "
+alias ipy="ipython "
+alias pypy="pypy3 "
+alias msm="~/.mycroft-core/bin/mycroft-msm "
+# alias py311="python3.11 "
+
+# cyber security
+alias msfc="msfconsole -q "
+alias vpn="vpn-chooser.sh "
+alias start_tor="systemctl start tor"
+alias proton="sudo protonvpn "
+NMAP_LOUD_ARGS="-T4 --reason -A --osscan-guess --version-all -oN"
+NMAP_QUIET_ARGS="-T4 -sS -oN"
+alias nmap-base="nmap $NMAP_LOUD_ARGS "
+alias ffuzz="ffuf "
+alias generic_send_tcp="spike-fuzzer-generic-send_tcp "
+alias flan="git clone git@github.com:cloudflare/flan.git; echo 'cd in to the \"flan\" directory and read the README.md for further instructions';"
+
+function n-long-password {
+    if [ $# -lt 2 ]; then
+        echo "usage:"
+        echo "n-long-passwords LENGTH WORDLIST"
+        echo "NOTE: that you can pass more then one WORDLIST"
+    else
+        rg "^.{$1}$" ${@:2}
+    fi
+}
+
+# pacman and yay
+alias pacsyu="sudo pacman -Syyu "
+alias yaysyu="yay -Syu --noconfirm "
+alias parusyu="doas paru"
+alias up="doas paru"
+
+# Changing "ls" to "exa"
+function pipe_exa {
+    dirs=$(echo "$@" | tr ' ' '\n' | rg "^[^-]")
+    n_dirs=$(echo -n $dirs | wc -l)
+    
+    if [[ $n_dirs == 0 && $dirs ]]; then
+	    echo -n "listing contents of: "
+	if [[ $(echo $dirs | rg "^[^/~]") ]]; then
+	    echo "$PWD/$dirs"
+	else
+	    echo "$dirs"
+	fi
+    elif [[ $n_dirs == 0 ]]; then
+	    echo -n "listing contents of: "
+	    pwd
+    fi
+}
+
+exa_mod="exa --icons --classify --color=always --group-directories-first"
+
+#alias els='(){pipe_exa $@; eval "$exa_mod" $@} '
+
+# alias ls="$exa_mod " # my preferred listing
+# alias la="$exa_mod -al "  # all files and dirs
+# alias ll="$exa_mod -l "  # long format
+# alias lt="$exa_mod -aT " # tree listing
+# alias l.="$exa_mod -ld .* " # hidden files and dirs long listing
+
+alias ls="$exa_mod " # my preferred listing
+alias la="$exa_mod -al "  # all files and dirs
+alias ll="$exa_mod -l "  # long format
+alias lt="$exa_mod -aT " # tree listing
+alias l.="$exa_mod -ld .* " # hidden fi
+
+# root privileges
+# alias doas="doas --"
+
+# navigation
+alias ..='cd ..'
+alias .2='cd ../..'
+alias .3='cd ../../..'
+alias .4='cd ../../..'
+alias .5='cd ../../../..'
+alias .6='cd ../../../../..'
+alias cdl='cd $OLDPWD'
+alias go-back="cd -" # same as 'cd $OLDPWD' just more official
+alias back="cd -"
+alias cd-="cd -"
+
+# git
+alias addup='git add -u'
+alias addall='git add .'
+#alias branch='git branch'
+#alias checkout='git checkout'
+#alias commit='git commit -m'
+#alias fetch='git fetch'
+#alias pull='git pull origin'
+#alias push='git push origin'
+#alias status='git status'
+#alias tag='git tag'
+#alias newtag='git tag -a'
+
+#pacman unlock
+alias unlock="sudo rm /var/lib/pacman/db.lck"
+alias rmpacmanlock="sudo rm /var/lib/pacman/db.lck"
+
+#arcolinux logout unlock
+alias rmlogoutlock="sudo rm /tmp/arcologout.lock"
+
+#free
+alias free="free -mt"
+
+#use all cores
+alias uac="sh ~/.bin/main/000*"
+
+#continue download
+alias wget="wget -c"
+
+#userlist
+alias userlist="cut -d: -f1 /etc/passwd"
+
+# pacman or pm
+alias update='sudo pacman -Syyu'
+
+#grub update
+alias update-grub="sudo grub-mkconfig -o /boot/grub/grub.cfg"
+
+#add new fonts
+alias update-fc='sudo fc-cache -fv'
+
+#switch between lightdm and sddm
+alias tolightdm="sudo pacman -S lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings --noconfirm --needed ; sudo systemctl enable lightdm.service -f ; echo 'Lightm is active - reboot now'"
+alias tosddm="sudo pacman -S sddm --noconfirm --needed ; sudo systemctl enable sddm.service -f ; echo 'Sddm is active - reboot now'"
+
+#check vulnerabilities microcode
+alias microcode='grep . /sys/devices/system/cpu/vulnerabilities/*'
+
+#get fastest mirrors in your neighborhood
+alias mirror="sudo reflector -f 30 -l 30 --number 10 --verbose --save /etc/pacman.d/mirrorlist"
+alias mirrord="sudo reflector --latest 30 --number 10 --sort delay --save /etc/pacman.d/mirrorlist"
+alias mirrors="sudo reflector --latest 30 --number 10 --sort score --save /etc/pacman.d/mirrorlist"
+alias mirrora="sudo reflector --latest 30 --number 10 --sort age --save /etc/pacman.d/mirrorlist"
+#our experimental - best option for the moment
+alias mirrorx="sudo reflector --age 6 --latest 20  --fastest 20 --threads 5 --sort rate --protocol https --save /etc/pacman.d/mirrorlist"
+alias mirrorxx="sudo reflector --age 6 --latest 20  --fastest 20 --threads 20 --sort rate --protocol https --save /etc/pacman.d/mirrorlist"
+
+#Recent Installed Packages
+alias rip="expac --timefmt='%Y-%m-%d %T' '%l\t%n %v' | sort | tail -200 | nl"
+alias riplong="expac --timefmt='%Y-%m-%d %T' '%l\t%n %v' | sort | tail -3000 | nl"
+
+#Cleanup orphaned packages
+alias cleanup='sudo pacman -Rns $(pacman -Qtdq)'
+
+#search content with ripgrep
+alias rg="rg --sort path"
+
+#get the error messages from journalctl
+alias jctl="journalctl -p 3 -xb"
+
+#nano for important configuration files
+#know what you do in these files
+alias nlightdm="sudo $EDITOR /etc/lightdm/lightdm.conf"
+alias npacman="sudo $EDITOR /etc/pacman.conf"
+alias ngrub="sudo $EDITOR /etc/default/grub"
+alias nconfgrub="sudo $EDITOR /boot/grub/grub.cfg"
+alias nmkinitcpio="sudo $EDITOR /etc/mkinitcpio.conf"
+alias nmirrorlist="sudo $EDITOR /etc/pacman.d/mirrorlist"
+alias nsddm="sudo $EDITOR /etc/sddm.conf"
+alias nfstab="sudo $EDITOR /etc/fstab"
+alias nnsswitch="sudo $EDITOR /etc/nsswitch.conf"
+alias nsamba="sudo $EDITOR /etc/samba/smb.conf"
+alias nb="$EDITOR ~/.bashrc"
+alias nz="$EDITOR ~/.zshrc"
+
+# youtube-dl
+alias yta-aac="youtube-dl --no-playlist --extract-audio --audio-format aac --add-metadata "
+alias yta-best="youtube-dl --no-playlist --extract-audio --audio-format best --add-metadata "
+alias yta-flac="youtube-dl--no-playlist  --extract-audio --audio-format flac --add-metadata "
+alias yta-m4a="youtube-dl--no-playlist  --extract-audio --audio-format m4a --add-metadata "
+alias yta-mp3="youtube-dl --extract-audio --audio-format mp3 --add-metadata "
+alias yta-opus="youtube-dl --no-playlist --extract-audio --audio-format opus --add-metadata "
+alias yta-vorbis="youtube-dl --no-playlist --extract-audio --audio-format vorbis --add-metadata "
+alias yta-wav="youtube-dl --no-playlist --extract-audio --audio-format wav --add-metadata "
+alias ytv-best="youtube-dl --no-playlist -f bestvideo+bestaudio "
+alias ytmp3="yta-mp3 "
+
+# the terminal rickroll
+alias rr='curl -s -L https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash'
+
+# code compilation
+alias release="cargo build --release "
+alias build="cargo build "
+alias gpp_compile="g++ -O -Wall -std=gnu++20 "
+
+cpp_comp () {
+    source="$1"
+    #echo $fname
+    if [ $# -eq 2 ]; then        
+        outfile="$2"
+    else
+        outfile="$(basename $source .cpp)"
+        echo "making variable: outfile"
+    fi
+
+    echo "compiling source code file: $source"
+    echo "outputing to file: $outfile"
+    gpp_compile $source -o $outfile
+}
+
+cpp_run () {
+    source="$1"
+    #echo $fname
+    if [ $# -eq 2 ]; then        
+        outfile="$2"
+    else
+        outfile="$(basename $source .cpp)"
+        echo "outputing compiled binary to filename \"$outfile\""
+    fi
+
+    #echo "compiling source code file: $source"
+    #echo "outputing to file: $outfile"
+    gpp_compile $source -o $outfile && ./$outfile
+}
+
+alias cppc="cpp_comp "
+alias cppr="cpp_run "
+
+
+
+# file
+roe () {
+    echo -n "would you like to Run or Edit the file \"$2\" [r/e] => "
+    read choice
+    # echo "choice => \"$choice\""
+    if [[ $choice == r* || $choice == R* ]]; then
+        #echo "runing file..."
+        $@
+    elif [[ $choice == e* || $choice == E* ]]; then
+        #echo "editing file"
+        $EDITOR ${@:2}
+    else
+        echo "please choose either 'run' or 'edit' (or the first letter)."
+        echo "not doing anything."
+    fi
+}
+
+se-or-edit () {
+    # echo "$1"
+    if [[ $1 == /* && $1 != $HOME/* ]]; then
+        #echo "sudo edit"
+        sudoedit $@
+    else
+        #echo "non sudo"
+        $EDITOR $@
+    fi
+}
+
+cpp-roe () {
+    #output_f="auto-compiled.out"
+    roe cpp_run $1 
+    if [[ $2 == "rm" || $2 == "-rm" ]]; then
+        outfile="$(basename $1 .cpp)"
+        rm $outfile
+    fi
+}
+
+#alias -s py="roe python"
+alias -s conf="se-or-edit"
+alias -s toml="$EDITOR"
+alias -s cpp="cpp-roe"
+alias -s txt="$EDITOR"
+alias -s yml="$EDITOR"
+alias -s md="bat"
+
+# Misc
+function start-local-vm {
+    if [[ ! $(doas virsh list --all | grep "$1" | grep "running") ]]; then
+        echo "[LOG] starting \"$1\"..."
+        if [[ $(doas virsh start $1) ]]; then
+            echo "[LOG] VM started successfully."
+        else
+            echo "[ERROR] could not start the vm."
+        fi
+
+        n_seconds=15 # can be 13 but set to 15 to be safe
+        echo "[LOG] waiting $n_seconds seconds..."
+        # py -c "from tqdm import trange; from time import sleep; [ sleep(1) for i in trange($n_seconds) ]"
+        
+        for i in $(seq 1 $n_seconds); do 
+            sleep 1
+            echo "$i"
+        done | python -m tqdm --unit sec --total $n_seconds --null
+        echo "[LOG] ready to ssh!"
+    fi
+}
+
+kali-local () {
+    start-local-vm kali-vm
+    echo "[LOG] SSHing into kali-local"
+    ssh kali-local
+}
+
+oscp-study () {
+    if [[ $(tmux ls 2> /dev/null | rg "oscp-study") ]]; then
+        tmux a -t oscp-study
+    else
+        auto-tmux oscp-study
+    fi
+}
+
+alias reset="cl && source ~/.zshrc " # clears the term keeping PWD.
+#alias fr="cl && cd ~/ && source ~/.zshrc " # make the terminal new again.
+alias starwars="telnet towel.blinkenlights.nl "
+alias tron="ssh sshtron.zachlatta.com "
+alias ray_submit="ray submit ~/ray_config/config.yaml --tmux --start "
+alias ray_attach="ray attach ~/ray_config/config.yaml --tmux"
+alias py-pause='python -c "input(\"<<-- PAUSED -->>\npress <Enter> to continue: \")"'
+alias vm-network="sudo virsh net-start default"
+#alias tts-stop="tmux kill-session -t tmp_speak"
+alias wtf="xargs -I STRING curl cheat.sh/STRING <<<"
+alias start-weylus="xargs -I PASSWD weylus --auto-start --no-gui --try-vaapi --access-code PASSWD <<<"
+# alias kali="distrobox enter kali -e"
+# alias kali-stop="distrobox stop kali"
+alias robot-dev="distrobox enter robot-dev"
+alias robot-dev-stop="distrobox stop robot-dev"
+alias db="distrobox"
+alias mkdir-cd="mkdir-cd "
+# alias oscp-study="auto-tmux oscp-study"
+
+
+function spell-check {
+    echo "$1" | aspell -a
+}
+
+alias spell="spell-check " 
+
+# doas must be alaiased last not a clue why tho...
+alias doas="doas "  # maintains aliases

@@ -1,0 +1,28 @@
+function is-tmux-session {
+  [ -n "$TMUX" ] && echo "yes" || echo "no"
+}
+
+function there-are-tmux-sessions {
+  [[ $(tmux ls 2> /dev/null) ]] && echo "yes" || echo "no"
+}
+
+function print-tmux-sessions {
+  echo " *** Tmux Sessions *** "
+  tmux ls
+}
+
+function tmux-welcome {
+  if [ $(there-are-tmux-sessions | grep "yes") ]; then
+    print-tmux-sessions
+  # else
+  #   echo "no Tmux sessions. THIS IS A BUG IN ~/.zsh_tmux"
+  fi
+}
+
+function ensure-tmux {
+  if [[ $(is-tmux-session | grep "no") ]]; then
+    n=$(($(/usr/bin/ls /tmp/ptdb/logs/ | grep -v ".tmp" | sort -n | tail -n 1) + 1))
+    tmux new -As "term-$n"
+    exit $?
+  fi
+}
