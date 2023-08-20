@@ -31,12 +31,10 @@ jobs:
         run: echo "::set-output name=date::$(date +%y.%m.%d)"
       - name: Build ISO
         run: |
-          pwd 
-          ls
-          echo \"[cal-repo]\nSigLevel = Optional DatabaseOptional\nServer = https://github.com/calacuda/$repo/raw/main/$arch\" >> /etc/pacman.conf
+          echo \"\\n[cal-repo]\\nSigLevel = Optional DatabaseOptional\\nServer = https://github.com/calacuda/$repo/raw/main/$arch\" >> /etc/pacman.conf
           pacman -Fy --noconfirm
           pacman -Syyu archiso --noconfirm
-          mkarchiso -v -w ./output -o ./output cal-linux/releng
+          mkarchiso -v -w ./output -o ./output releng
       - name: New Release
         uses: svenstaro/upload-release-action@v2
         with:
