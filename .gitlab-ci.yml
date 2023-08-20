@@ -67,7 +67,7 @@ build_upload:
     - when: manual
       allow_failure: false
   script:
-    - "pacman -Sy curl --noconfirm"
+    - "pacman -Sy curl archiso --noconfirm"
     - "mkarchiso -v -w ./output -o ./output releng"
     - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file output/${ISO_NAME} ${PACKAGE_REGISTRY_URL}'
 
