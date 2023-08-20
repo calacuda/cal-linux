@@ -31,7 +31,8 @@ jobs:
         run: curl -L https://github.com/zaoqi/github-actions-archlinux/raw/master/install.sh | sh
       - name: Build ISO
         run: |
-          curl https://blackarch.org/strap.sh | sh
+          whoami
+          curl https://blackarch.org/strap.sh | sudo sh
           echo \"[cal-repo]\nSigLevel = Optional DatabaseOptional\nServer = https://github.com/calacuda/$repo/raw/main/$arch\" >> /etc/pacman.conf
           pacman -Fy --noconfirm
           pacman -Syyu archiso --noconfirm
@@ -39,7 +40,7 @@ jobs:
       - name: New Release
         uses: svenstaro/upload-release-action@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: ${{ secrets.REPO_TOKEN }}
           file: output/*.iso
           # asset_name: mything
           tag: ${{ steps.date.outputs.date }}
