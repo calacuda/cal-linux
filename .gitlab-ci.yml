@@ -57,7 +57,7 @@ variables:
 
 build_upload:
   stage: upload
-  image: archlinux:latest
+  image: blackarchlinux/blackarch
   # dependencies:
   #   - config-update
   rules:
