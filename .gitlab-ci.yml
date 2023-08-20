@@ -1,5 +1,5 @@
 stages:
-  - config-update
+  # - config-update
   # - build-iso
   - upload
   - release
