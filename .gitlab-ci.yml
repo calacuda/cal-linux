@@ -7,7 +7,7 @@ stages:
 variables:
   DATE: "$(date +%y.%m.%d)"
   ISO_NAME: "CAL-${DATE}-x86_64.iso"
-  PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${DATE}/${DATE}/"
+  PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/ISOs/${DATE}/"
 
 # astronvim:
 #   stage: config-update
@@ -64,10 +64,12 @@ build_upload:
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: always
       allow_failure: false
+    - when: manual
+      allow_failure: true
   script:
     - "pacman -S curl"
     - "mkarchiso -v -w ./output -o ./output releng"
-    - "curl --header \"JOB-TOKEN: ${CI_JOB_TOKEN}\" --upload-file output/${ISO_NAME} ${PACKAGE_REGISTRY_URL}"
+    - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file output/${ISO_NAME} ${PACKAGE_REGISTRY_URL}'
 
 # upload:
 #   stage: upload
