@@ -24,3 +24,4 @@ the credentials for the live iso are:
   - [ ] delete the coresponding .git folders.
   - [ ] commit updates.
   - [ ] make a new ISO. (and add release for it.)
+- [ ] add Calamares installer
