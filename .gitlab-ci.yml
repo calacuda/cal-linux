@@ -1,15 +1,101 @@
-# You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
-# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
-# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 stages:
-  - test
+  - config-update
+  # - build-iso
+  - upload
+  - release
 
-sast:
-  stage: test
+variables:
+  DATE: "$(date +%y.%m.%d)"
+  ISO_NAME: "CAL-${DATE}-x86_64.iso"
+  PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${DATE}/${DATE}/"
 
-include:
-  - template: Security/SAST.gitlab-ci.yml
+# astronvim:
+#   stage: config-update
+#   image: archlinux:latest
+#   rules:
+#     - if: $CI_PIPELINE_SOURCE == "schedule"
+#       when: always
+#       allow_failure: false
+#   script:
+#     - "echo 'gathering astronvim'"
+#     - "git clone --depth 1 https://github.com/AstroNvim/AstroNvim releng/airootfs/etc/skel/.config/nvim"
+#     - "cp releng/airootfs/etc/skel/.config/nvim releng/airootfs/root/.config/nvim"
+#     - "rm -rf releng/airootfs/{etc/skel,root}/.config/nvim/.git"
+#     - "echo 'gathering astronvim configs'"
+#     - "git clone https://github.com/calacuda/astronvim-configs.git releng/airootfs/etc/skel/.config/nvim/lua/user"
+#     - "cp releng/airootfs/etc/skel/.config/nvim/lua/user releng/airootfs/root/.config/nvim/lua/user"
+#     - "pacman -S openssh --needed"
+#     - eval $(ssh-agent -s)
+#     - cat "$SSH_PRIVATE_KEY_TOOLKIT" | tr -d '\r' | ssh-add - > /dev/null
+#     - mkdir -p ~/.ssh
+#     - chmod 700 ~/.ssh
+#     - ssh-keyscan $GITLAB_URL >> ~/.ssh/known_hosts
+#     - chmod 644 ~/.ssh/known_hosts
+#     - git config --global user.email "our@email.com"
+#     - git config --global user.name "Gitlab Runner"
+#     - "git add ."
+#     - "git commit -m 'updated astronvim'"
+#     - "git push"
+
+# not setup yet
+# bspwm:
+#   stage: config-update
+#   image: archlinux:latest
+#   rules:
+#     - if: $CI_PIPELINE_SOURCE == "schedule"
+#       when: always
+#       allow_failure: false
+
+# not setup yet
+# hyprland:
+#   stage: config-update
+#   image: archlinux:latest
+#   rules:
+#     - if: $CI_PIPELINE_SOURCE == "schedule"
+#       when: always
+#       allow_failure: false
+
+build_upload:
+  stage: upload
+  image: archlinux:latest
+  # dependencies:
+  #   - config-update
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+      allow_failure: false
+  script:
+    - pacman -S curl
+    - mkarchiso -v -w ./output -o ./output releng
+    - curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file output/${ISO_NAME} ${PACKAGE_REGISTRY_URL}
+
+# upload:
+#   stage: upload
+#   image: curlimages/curl:latest
+#   rules:
+#     - if: $CI_PIPELINE_SOURCE == "schedule"
+#       when: always
+#       allow_failure: false
+#   script:
+#     - curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file output/${ISO_NAME} ${PACKAGE_REGISTRY_URL}
+
+release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  dependencies:
+    - upload
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+      allow_failure: false
+    - when: manual
+      allow_failure: true
+  script:
+    - echo "generating monthly ISO"
+  release: # See https://docs.gitlab.com/ee/ci/yaml/#release for available properties
+    tag_name: "$DATE"
+    description: "monthly release of CAL Linux"
+    assets:
+      links:
+        - name: "CAL-ISO-$DATE"
+          url: "${PACKAGE_REGISTRY_URL}"
