@@ -67,7 +67,7 @@ build_upload:
     - when: manual
       allow_failure: false
   script:
-    - "echo \"[cal-repo]\nSigLevel = Optional DatabaseOptional\nServer = https://github.com/calacuda/$repo/raw/main/x86_64\" >> /etc/pacman.conf"
+    - "echo \"[cal-repo]\nSigLevel = Optional DatabaseOptional\nServer = https://github.com/calacuda/$repo/raw/main/$arch\" >> /etc/pacman.conf"
     - "pacman -Fy --noconfirm"
     - "pacman -Syyu curl archiso --noconfirm"
     - "mkarchiso -v -w ./output -o ./output releng"
