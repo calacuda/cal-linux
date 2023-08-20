@@ -1,0 +1,48 @@
+name: Release
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 1 * *"
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  release:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +%y.%m.%d)"
+      - name: Install Archlinux
+        run: curl -L https://github.com/zaoqi/github-actions-archlinux/raw/master/install.sh | sh
+      - name: Build ISO
+        run: |
+          curl https://blackarch.org/strap.sh | sh
+          echo \"[cal-repo]\nSigLevel = Optional DatabaseOptional\nServer = https://github.com/calacuda/$repo/raw/main/$arch\" >> /etc/pacman.conf
+          pacman -Fy --noconfirm
+          pacman -Syyu archiso --noconfirm
+          mkarchiso -v -w ./output -o ./output releng
+      - name: New Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: output/*.iso
+          # asset_name: mything
+          tag: ${{ steps.date.outputs.date }}
+          overwrite: true
+          body: "CAL Linux release for \"${{ steps.date.outputs.date }}\""
+
